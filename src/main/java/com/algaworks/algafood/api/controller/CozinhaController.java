@@ -6,13 +6,13 @@ import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.repository.CozinhaRepository;
 import com.algaworks.algafood.domain.service.CozinhaService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cozinhas")
@@ -26,14 +26,14 @@ public class CozinhaController {
 
     @GetMapping
     public List<Cozinha> listar() {
-        return cozinhaRepository.listar();
+        return cozinhaRepository.findAll();
     }
 
     @GetMapping("/{cozinhaId}")
     public ResponseEntity<Cozinha> buscar(@PathVariable Long cozinhaId) {
-        Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
+        Optional<Cozinha> cozinha = cozinhaRepository.findById(cozinhaId);
 
-        return cozinha != null ? ResponseEntity.ok(cozinha) : ResponseEntity.notFound().build();
+        return !cozinha.isPresent() ? ResponseEntity.ok(cozinha.get()) : ResponseEntity.notFound().build();
 
     }
 
@@ -46,16 +46,16 @@ public class CozinhaController {
 
     @PutMapping("/{cozinhaId}")
     public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId, @RequestBody Cozinha cozinha) {
-        Cozinha cozinhaAtual = cozinhaRepository.buscar(cozinhaId);
+        Optional<Cozinha> cozinhaAtual = cozinhaRepository.findById(cozinhaId);
 
 
         try {
-            if (cozinhaAtual != null) {
+            if (cozinhaAtual.isPresent()) {
                 //Copiar os Valores para outro objeto
-                BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-                cozinhaService.salvar(cozinhaAtual);
+                BeanUtils.copyProperties(cozinha, cozinhaAtual.get(), "id");
+                Cozinha cozinhaSalva = cozinhaService.salvar(cozinhaAtual.get());
 
-                return ResponseEntity.ok(cozinhaAtual);
+                return ResponseEntity.ok(cozinhaSalva);
             }
         } catch (EntidadeNaoEncontradaException e) {
             return ResponseEntity.badRequest().build();
