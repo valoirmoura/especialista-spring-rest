@@ -33,7 +33,7 @@ public class CozinhaController {
     public ResponseEntity<Cozinha> buscar(@PathVariable Long cozinhaId) {
         Optional<Cozinha> cozinha = cozinhaRepository.findById(cozinhaId);
 
-        return !cozinha.isPresent() ? ResponseEntity.ok(cozinha.get()) : ResponseEntity.notFound().build();
+        return cozinha.isPresent() ? ResponseEntity.ok(cozinha.get()) : ResponseEntity.notFound().build();
 
     }
 
