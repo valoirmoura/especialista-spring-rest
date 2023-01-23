@@ -68,4 +68,15 @@ public class TestController {
     public List<Restaurante> restaurantePorNomeEFrete(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) {
         return restauranteRepository.consultarRestaurantePorNome(nome, taxaFreteInicial, taxaFreteFinal);
     }
+
+    @GetMapping("/restaurantes/com-frete-gratis")
+    public List<Restaurante> restauranteComFreteGratis(String nome) {
+        return restauranteRepository.findComFreteGratis(nome);
+    }
+
+    @GetMapping("/restaurantes/com-frete-gratis-spec")
+    public Optional<Restaurante> restauranteComFreteGratisSpec(String nome) {
+        return restauranteRepository.buscarPrimeiro();
+    }
+
 }
