@@ -19,9 +19,10 @@ public class Cozinha {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String nome;
 
-    @JsonIgnore //Sem esta propriedade ficaria em um Loop infinito, durante a serialização na listagem de restaurantes  ou cozinhas
+    @JsonIgnore
     @OneToMany(mappedBy = "cozinha")
     private List<Restaurante> restaurantes = new ArrayList<>();
 
