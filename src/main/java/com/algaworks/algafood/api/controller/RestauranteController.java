@@ -30,7 +30,13 @@ public class RestauranteController {
 
     @GetMapping
     public List<Restaurante> listar() {
-        return restauranteRepository.findAll();
+        List<Restaurante> restaurantes = restauranteRepository.findAll();
+
+        //Quando utilizamos o LazyLoading aqui haverá um select entre os 2 prints;
+//        System.out.println("O nome da Cozinha é: ");
+//        System.out.println(restaurantes.get(0).getCozinha().getNome());
+
+        return restaurantes;
     }
 
     @GetMapping("/{id}")

@@ -1,6 +1,7 @@
 package com.algaworks.algafood.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,7 +29,10 @@ public class Restaurante {
     @Column(name = "taxa_frete", nullable = false)
     private BigDecimal taxaFrete;
 
-    @ManyToOne
+    //Toda Mapeamento finalizado com ToOne utiliza EagerLoading, ou seja, carregamento ancioso, mesmo que vc não precise ele irá retornar...
+    //Para Alterar o Fetch tulizamos a propriedade fetch, assim conseguimos customizar o retorno...
+    @JsonIgnoreProperties("hibernateLazyInitializer") //Esta Anotations, ignora propriedades que estão dentro da Propriedade
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cozinha_id", nullable = false)
     private Cozinha cozinha;
 
@@ -46,6 +50,7 @@ public class Restaurante {
     @Column(nullable = false, columnDefinition = "datetime")
     private LocalDateTime dataAtualizacao;
 
+    //Toda mapeamento finalizado com ToMany utiliza LazyLoading, ou seja, carregamento preguisoso, só retornará, caso vc chame explicitamente....
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "restaurante_forma_pagamento",
