@@ -32,7 +32,7 @@ public class Restaurante {
     //Toda Mapeamento finalizado com ToOne utiliza EagerLoading, ou seja, carregamento ancioso, mesmo que vc não precise ele irá retornar...
     //Para Alterar o Fetch tulizamos a propriedade fetch, assim conseguimos customizar o retorno...
     @JsonIgnoreProperties("hibernateLazyInitializer") //Esta Anotations, ignora propriedades que estão dentro da Propriedade
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne //(fetch = FetchType.LAZY)
     @JoinColumn(name = "cozinha_id", nullable = false)
     private Cozinha cozinha;
 
@@ -52,7 +52,7 @@ public class Restaurante {
 
     //Toda mapeamento finalizado com ToMany utiliza LazyLoading, ou seja, carregamento preguisoso, só retornará, caso vc chame explicitamente....
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER) //Alterando de Lazy para Eager, muito pouco utilizado isso!
     @JoinTable(name = "restaurante_forma_pagamento",
             joinColumns = @JoinColumn(name = "restaurante_id"),
             inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))

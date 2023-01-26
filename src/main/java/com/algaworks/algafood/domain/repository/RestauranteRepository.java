@@ -2,6 +2,7 @@ package com.algaworks.algafood.domain.repository;
 
 import com.algaworks.algafood.domain.model.Restaurante;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -26,5 +27,10 @@ public interface RestauranteRepository extends CustomJpaRepository<Restaurante, 
 
     //    @Query("from Restaurante where nome like %:nome% and cozinha.id = :id")
     List<Restaurante> consultarPorNome(String nome, @Param("id") Long id);
+
+
+    //Ao Criar uma Query com a palavra chave fetch, eliminamos o problema do N+1, ou seja, consultas duplicadas, triplicadas.... do JPA, assim temos apenas um Select...
+    @Query("from Restaurante r join fetch r.cozinha join fetch r.formasPagamento ")
+    List<Restaurante> findAll();
 
 }
