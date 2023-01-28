@@ -30,7 +30,7 @@ public interface RestauranteRepository extends CustomJpaRepository<Restaurante, 
 
 
     //Ao Criar uma Query com a palavra chave fetch, eliminamos o problema do N+1, ou seja, consultas duplicadas, triplicadas.... do JPA, assim temos apenas um Select...
-    @Query("from Restaurante r join fetch r.cozinha join fetch r.formasPagamento ")
+    @Query("from Restaurante r join fetch r.cozinha")
     List<Restaurante> findAll();
 
 }
