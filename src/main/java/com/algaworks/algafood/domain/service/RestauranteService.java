@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class RestauranteService {
 
+    public static final String MSG_RESTAURANTE_NAO_ENCONTRADO = "Não existe um cadastro de restaurante com código %d";
+    public static final String MSG_RESTAURANTE_EM_USO = "Restaurante de código %d não pode ser removido, pois está em uso";
+    public static final String MSG_COZINHA_NAO_ENCONTRADA = "Não existe cozinha com o id: %d informado ";
     @Autowired
     private RestauranteRepository restauranteRepository;
 
@@ -24,7 +27,7 @@ public class RestauranteService {
         Long cozinhaId = restaurante.getCozinha().getId();
         Cozinha cozinha = cozinhaRepository
                 .findById(cozinhaId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException(String.format("Não existe cozinha com o id: %d informado ", cozinhaId)));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException(String.format(MSG_COZINHA_NAO_ENCONTRADA, cozinhaId)));
 
         restaurante.setCozinha(cozinha);
         return restauranteRepository.save(restaurante);
@@ -34,9 +37,15 @@ public class RestauranteService {
         try {
             restauranteRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new EntidadeNaoEncontradaException(String.format("Não existe um cadastro de restaurante com código %d", id));
+            throw new EntidadeNaoEncontradaException(String.format(MSG_RESTAURANTE_NAO_ENCONTRADO, id));
         } catch (DataIntegrityViolationException e) {
-            throw new EntidadeEmUsoException(String.format("Restaurante de código %d não pode ser removido, pois está em uso", id));
+            throw new EntidadeEmUsoException(String.format(MSG_RESTAURANTE_EM_USO, id));
         }
+    }
+
+    public Restaurante buscarOuFalhar(Long restauranteId) {
+        return restauranteRepository
+                .findById(restauranteId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException(MSG_RESTAURANTE_NAO_ENCONTRADO));
     }
 }
