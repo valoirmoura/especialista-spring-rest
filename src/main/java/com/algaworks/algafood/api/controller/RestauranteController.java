@@ -1,6 +1,7 @@
 package com.algaworks.algafood.api.controller;
 
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
+import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.repository.RestauranteRepository;
 import com.algaworks.algafood.domain.service.RestauranteService;
@@ -8,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,13 +41,13 @@ public class RestauranteController {
 
     @GetMapping
     public List<Restaurante> listar() {
-        List<Restaurante> restaurantes = restauranteRepository.findAll();
+        /*
+        Quando utilizamos o LazyLoading aqui haverá um select entre os 2 prints;
+        System.out.println("O nome da Cozinha é: ");
+        System.out.println(restaurantes.get(0).getCozinha().getNome());
+         */
 
-        //Quando utilizamos o LazyLoading aqui haverá um select entre os 2 prints;
-//        System.out.println("O nome da Cozinha é: ");
-//        System.out.println(restaurantes.get(0).getCozinha().getNome());
-
-        return restaurantes;
+        return restauranteRepository.findAll();
     }
 
     @GetMapping("/{id}")
@@ -56,12 +56,12 @@ public class RestauranteController {
     }
 
     @PostMapping
-    public ResponseEntity<?> adicionar(@RequestBody Restaurante restaurante) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Restaurante adicionar(@RequestBody Restaurante restaurante) {
         try {
-            restaurante = restauranteService.salvar(restaurante);
-            return ResponseEntity.status(HttpStatus.CREATED).body(restaurante);
+            return restauranteService.salvar(restaurante);
         } catch (EntidadeNaoEncontradaException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            throw new NegocioException(e.getMessage());
         }
     }
 
@@ -70,7 +70,12 @@ public class RestauranteController {
         Restaurante restauranteAtual = restauranteService.buscarOuFalhar(id);
         BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "formasPagamento", "endereco", "dataCadastro");
 
-        return restauranteService.salvar(restauranteAtual);
+
+        try {
+            return restauranteService.salvar(restauranteAtual);
+        } catch (EntidadeNaoEncontradaException e) {
+            throw new NegocioException(e.getMessage());
+        }
     }
 
     @PatchMapping("/{id}")
